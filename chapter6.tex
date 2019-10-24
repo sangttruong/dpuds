@@ -1,0 +1,614 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Chapter 6: Linear Model Selection and Regularization},
+            pdfauthor={Sang Truong},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Chapter 6: Linear Model Selection and Regularization}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Sang Truong}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{October 23, 2019}
+
+
+\begin{document}
+\maketitle
+
+\section{Loading the data}\label{loading-the-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(ISLR)}
+\KeywordTok{summary}\NormalTok{(Hitters)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      AtBat            Hits         HmRun            Runs       
+##  Min.   : 16.0   Min.   :  1   Min.   : 0.00   Min.   :  0.00  
+##  1st Qu.:255.2   1st Qu.: 64   1st Qu.: 4.00   1st Qu.: 30.25  
+##  Median :379.5   Median : 96   Median : 8.00   Median : 48.00  
+##  Mean   :380.9   Mean   :101   Mean   :10.77   Mean   : 50.91  
+##  3rd Qu.:512.0   3rd Qu.:137   3rd Qu.:16.00   3rd Qu.: 69.00  
+##  Max.   :687.0   Max.   :238   Max.   :40.00   Max.   :130.00  
+##                                                                
+##       RBI             Walks            Years            CAtBat       
+##  Min.   :  0.00   Min.   :  0.00   Min.   : 1.000   Min.   :   19.0  
+##  1st Qu.: 28.00   1st Qu.: 22.00   1st Qu.: 4.000   1st Qu.:  816.8  
+##  Median : 44.00   Median : 35.00   Median : 6.000   Median : 1928.0  
+##  Mean   : 48.03   Mean   : 38.74   Mean   : 7.444   Mean   : 2648.7  
+##  3rd Qu.: 64.75   3rd Qu.: 53.00   3rd Qu.:11.000   3rd Qu.: 3924.2  
+##  Max.   :121.00   Max.   :105.00   Max.   :24.000   Max.   :14053.0  
+##                                                                      
+##      CHits            CHmRun           CRuns             CRBI        
+##  Min.   :   4.0   Min.   :  0.00   Min.   :   1.0   Min.   :   0.00  
+##  1st Qu.: 209.0   1st Qu.: 14.00   1st Qu.: 100.2   1st Qu.:  88.75  
+##  Median : 508.0   Median : 37.50   Median : 247.0   Median : 220.50  
+##  Mean   : 717.6   Mean   : 69.49   Mean   : 358.8   Mean   : 330.12  
+##  3rd Qu.:1059.2   3rd Qu.: 90.00   3rd Qu.: 526.2   3rd Qu.: 426.25  
+##  Max.   :4256.0   Max.   :548.00   Max.   :2165.0   Max.   :1659.00  
+##                                                                      
+##      CWalks        League  Division    PutOuts          Assists     
+##  Min.   :   0.00   A:175   E:157    Min.   :   0.0   Min.   :  0.0  
+##  1st Qu.:  67.25   N:147   W:165    1st Qu.: 109.2   1st Qu.:  7.0  
+##  Median : 170.50                    Median : 212.0   Median : 39.5  
+##  Mean   : 260.24                    Mean   : 288.9   Mean   :106.9  
+##  3rd Qu.: 339.25                    3rd Qu.: 325.0   3rd Qu.:166.0  
+##  Max.   :1566.00                    Max.   :1378.0   Max.   :492.0  
+##                                                                     
+##      Errors          Salary       NewLeague
+##  Min.   : 0.00   Min.   :  67.5   A:176    
+##  1st Qu.: 3.00   1st Qu.: 190.0   N:146    
+##  Median : 6.00   Median : 425.0            
+##  Mean   : 8.04   Mean   : 535.9            
+##  3rd Qu.:11.00   3rd Qu.: 750.0            
+##  Max.   :32.00   Max.   :2460.0            
+##                  NA's   :59
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(Hitters)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                   AtBat Hits HmRun Runs RBI Walks Years CAtBat CHits
+## -Andy Allanson      293   66     1   30  29    14     1    293    66
+## -Alan Ashby         315   81     7   24  38    39    14   3449   835
+## -Alvin Davis        479  130    18   66  72    76     3   1624   457
+## -Andre Dawson       496  141    20   65  78    37    11   5628  1575
+## -Andres Galarraga   321   87    10   39  42    30     2    396   101
+## -Alfredo Griffin    594  169     4   74  51    35    11   4408  1133
+##                   CHmRun CRuns CRBI CWalks League Division PutOuts Assists
+## -Andy Allanson         1    30   29     14      A        E     446      33
+## -Alan Ashby           69   321  414    375      N        W     632      43
+## -Alvin Davis          63   224  266    263      A        W     880      82
+## -Andre Dawson        225   828  838    354      N        E     200      11
+## -Andres Galarraga     12    48   46     33      N        E     805      40
+## -Alfredo Griffin      19   501  336    194      A        W     282     421
+##                   Errors Salary NewLeague
+## -Andy Allanson        20     NA         A
+## -Alan Ashby           10  475.0         N
+## -Alvin Davis          14  480.0         A
+## -Andre Dawson          3  500.0         N
+## -Andres Galarraga      4   91.5         N
+## -Alfredo Griffin      25  750.0         A
+\end{verbatim}
+
+There are some missing values here, so before we proceed we will remove
+them:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Hitters =}\StringTok{ }\KeywordTok{na.omit}\NormalTok{(Hitters)}
+\KeywordTok{with}\NormalTok{(Hitters, }\KeywordTok{sum}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(Salary)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\section{Best subset regression}\label{best-subset-regression}
+
+We will now use the package \texttt{leaps} to evaluate all the
+best-subset models.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(leaps)}
+\NormalTok{regfit.full=}\KeywordTok{regsubsets}\NormalTok{(Salary}\OperatorTok{~}\NormalTok{.,}\DataTypeTok{data =}\NormalTok{ Hitters)}
+\KeywordTok{summary}\NormalTok{(regfit.full)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Subset selection object
+## Call: regsubsets.formula(Salary ~ ., data = Hitters)
+## 19 Variables  (and intercept)
+##            Forced in Forced out
+## AtBat          FALSE      FALSE
+## Hits           FALSE      FALSE
+## HmRun          FALSE      FALSE
+## Runs           FALSE      FALSE
+## RBI            FALSE      FALSE
+## Walks          FALSE      FALSE
+## Years          FALSE      FALSE
+## CAtBat         FALSE      FALSE
+## CHits          FALSE      FALSE
+## CHmRun         FALSE      FALSE
+## CRuns          FALSE      FALSE
+## CRBI           FALSE      FALSE
+## CWalks         FALSE      FALSE
+## LeagueN        FALSE      FALSE
+## DivisionW      FALSE      FALSE
+## PutOuts        FALSE      FALSE
+## Assists        FALSE      FALSE
+## Errors         FALSE      FALSE
+## NewLeagueN     FALSE      FALSE
+## 1 subsets of each size up to 8
+## Selection Algorithm: exhaustive
+##          AtBat Hits HmRun Runs RBI Walks Years CAtBat CHits CHmRun CRuns
+## 1  ( 1 ) " "   " "  " "   " "  " " " "   " "   " "    " "   " "    " "  
+## 2  ( 1 ) " "   "*"  " "   " "  " " " "   " "   " "    " "   " "    " "  
+## 3  ( 1 ) " "   "*"  " "   " "  " " " "   " "   " "    " "   " "    " "  
+## 4  ( 1 ) " "   "*"  " "   " "  " " " "   " "   " "    " "   " "    " "  
+## 5  ( 1 ) "*"   "*"  " "   " "  " " " "   " "   " "    " "   " "    " "  
+## 6  ( 1 ) "*"   "*"  " "   " "  " " "*"   " "   " "    " "   " "    " "  
+## 7  ( 1 ) " "   "*"  " "   " "  " " "*"   " "   "*"    "*"   "*"    " "  
+## 8  ( 1 ) "*"   "*"  " "   " "  " " "*"   " "   " "    " "   "*"    "*"  
+##          CRBI CWalks LeagueN DivisionW PutOuts Assists Errors NewLeagueN
+## 1  ( 1 ) "*"  " "    " "     " "       " "     " "     " "    " "       
+## 2  ( 1 ) "*"  " "    " "     " "       " "     " "     " "    " "       
+## 3  ( 1 ) "*"  " "    " "     " "       "*"     " "     " "    " "       
+## 4  ( 1 ) "*"  " "    " "     "*"       "*"     " "     " "    " "       
+## 5  ( 1 ) "*"  " "    " "     "*"       "*"     " "     " "    " "       
+## 6  ( 1 ) "*"  " "    " "     "*"       "*"     " "     " "    " "       
+## 7  ( 1 ) " "  " "    " "     "*"       "*"     " "     " "    " "       
+## 8  ( 1 ) " "  "*"    " "     "*"       "*"     " "     " "    " "
+\end{verbatim}
+
+It gives by default best-subsets up to size 8; lets increase that to 19,
+i.e.~all the variables
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{regfit.full=}\KeywordTok{regsubsets}\NormalTok{(Salary}\OperatorTok{~}\NormalTok{.,}\DataTypeTok{data =}\NormalTok{ Hitters, }\DataTypeTok{nvmax =} \DecValTok{19}\NormalTok{)}
+\NormalTok{reg.summary =}\StringTok{ }\KeywordTok{summary}\NormalTok{(regfit.full)}
+\KeywordTok{plot}\NormalTok{(reg.summary}\OperatorTok{$}\NormalTok{cp, }\DataTypeTok{xlab=}\StringTok{"Number of Variables"}\NormalTok{, }\DataTypeTok{ylab =} \StringTok{"Cp"}\NormalTok{)}
+\KeywordTok{which.min}\NormalTok{(reg.summary}\OperatorTok{$}\NormalTok{cp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 10
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{points}\NormalTok{(}\DecValTok{10}\NormalTok{, reg.summary}\OperatorTok{$}\NormalTok{cp[}\DecValTok{10}\NormalTok{], }\DataTypeTok{pch =} \DecValTok{20}\NormalTok{, }\DataTypeTok{col =} \StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{chapter6_files/figure-latex/unnamed-chunk-4-1.pdf}
+There is a plot method for the \texttt{regsubsets} object
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(regfit.full, }\DataTypeTok{scale=}\StringTok{"Cp"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{chapter6_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{coef}\NormalTok{(regfit.full, }\DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  (Intercept)        AtBat         Hits        Walks       CAtBat 
+##  162.5354420   -2.1686501    6.9180175    5.7732246   -0.1300798 
+##        CRuns         CRBI       CWalks    DivisionW      PutOuts 
+##    1.4082490    0.7743122   -0.8308264 -112.3800575    0.2973726 
+##      Assists 
+##    0.2831680
+\end{verbatim}
+
+\section{Forward stepwise selection}\label{forward-stepwise-selection}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{regfit.fwd =}\StringTok{ }\KeywordTok{regsubsets}\NormalTok{(Salary}\OperatorTok{~}\NormalTok{., }\DataTypeTok{data =}\NormalTok{ Hitters, }\DataTypeTok{nvmax =} \DecValTok{19}\NormalTok{, }\DataTypeTok{method =} \StringTok{"forward"}\NormalTok{)}
+\KeywordTok{summary}\NormalTok{(regfit.fwd)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Subset selection object
+## Call: regsubsets.formula(Salary ~ ., data = Hitters, nvmax = 19, method = "forward")
+## 19 Variables  (and intercept)
+##            Forced in Forced out
+## AtBat          FALSE      FALSE
+## Hits           FALSE      FALSE
+## HmRun          FALSE      FALSE
+## Runs           FALSE      FALSE
+## RBI            FALSE      FALSE
+## Walks          FALSE      FALSE
+## Years          FALSE      FALSE
+## CAtBat         FALSE      FALSE
+## CHits          FALSE      FALSE
+## CHmRun         FALSE      FALSE
+## CRuns          FALSE      FALSE
+## CRBI           FALSE      FALSE
+## CWalks         FALSE      FALSE
+## LeagueN        FALSE      FALSE
+## DivisionW      FALSE      FALSE
+## PutOuts        FALSE      FALSE
+## Assists        FALSE      FALSE
+## Errors         FALSE      FALSE
+## NewLeagueN     FALSE      FALSE
+## 1 subsets of each size up to 19
+## Selection Algorithm: forward
+##           AtBat Hits HmRun Runs RBI Walks Years CAtBat CHits CHmRun CRuns
+## 1  ( 1 )  " "   " "  " "   " "  " " " "   " "   " "    " "   " "    " "  
+## 2  ( 1 )  " "   "*"  " "   " "  " " " "   " "   " "    " "   " "    " "  
+## 3  ( 1 )  " "   "*"  " "   " "  " " " "   " "   " "    " "   " "    " "  
+## 4  ( 1 )  " "   "*"  " "   " "  " " " "   " "   " "    " "   " "    " "  
+## 5  ( 1 )  "*"   "*"  " "   " "  " " " "   " "   " "    " "   " "    " "  
+## 6  ( 1 )  "*"   "*"  " "   " "  " " "*"   " "   " "    " "   " "    " "  
+## 7  ( 1 )  "*"   "*"  " "   " "  " " "*"   " "   " "    " "   " "    " "  
+## 8  ( 1 )  "*"   "*"  " "   " "  " " "*"   " "   " "    " "   " "    "*"  
+## 9  ( 1 )  "*"   "*"  " "   " "  " " "*"   " "   "*"    " "   " "    "*"  
+## 10  ( 1 ) "*"   "*"  " "   " "  " " "*"   " "   "*"    " "   " "    "*"  
+## 11  ( 1 ) "*"   "*"  " "   " "  " " "*"   " "   "*"    " "   " "    "*"  
+## 12  ( 1 ) "*"   "*"  " "   "*"  " " "*"   " "   "*"    " "   " "    "*"  
+## 13  ( 1 ) "*"   "*"  " "   "*"  " " "*"   " "   "*"    " "   " "    "*"  
+## 14  ( 1 ) "*"   "*"  "*"   "*"  " " "*"   " "   "*"    " "   " "    "*"  
+## 15  ( 1 ) "*"   "*"  "*"   "*"  " " "*"   " "   "*"    "*"   " "    "*"  
+## 16  ( 1 ) "*"   "*"  "*"   "*"  "*" "*"   " "   "*"    "*"   " "    "*"  
+## 17  ( 1 ) "*"   "*"  "*"   "*"  "*" "*"   " "   "*"    "*"   " "    "*"  
+## 18  ( 1 ) "*"   "*"  "*"   "*"  "*" "*"   "*"   "*"    "*"   " "    "*"  
+## 19  ( 1 ) "*"   "*"  "*"   "*"  "*" "*"   "*"   "*"    "*"   "*"    "*"  
+##           CRBI CWalks LeagueN DivisionW PutOuts Assists Errors NewLeagueN
+## 1  ( 1 )  "*"  " "    " "     " "       " "     " "     " "    " "       
+## 2  ( 1 )  "*"  " "    " "     " "       " "     " "     " "    " "       
+## 3  ( 1 )  "*"  " "    " "     " "       "*"     " "     " "    " "       
+## 4  ( 1 )  "*"  " "    " "     "*"       "*"     " "     " "    " "       
+## 5  ( 1 )  "*"  " "    " "     "*"       "*"     " "     " "    " "       
+## 6  ( 1 )  "*"  " "    " "     "*"       "*"     " "     " "    " "       
+## 7  ( 1 )  "*"  "*"    " "     "*"       "*"     " "     " "    " "       
+## 8  ( 1 )  "*"  "*"    " "     "*"       "*"     " "     " "    " "       
+## 9  ( 1 )  "*"  "*"    " "     "*"       "*"     " "     " "    " "       
+## 10  ( 1 ) "*"  "*"    " "     "*"       "*"     "*"     " "    " "       
+## 11  ( 1 ) "*"  "*"    "*"     "*"       "*"     "*"     " "    " "       
+## 12  ( 1 ) "*"  "*"    "*"     "*"       "*"     "*"     " "    " "       
+## 13  ( 1 ) "*"  "*"    "*"     "*"       "*"     "*"     "*"    " "       
+## 14  ( 1 ) "*"  "*"    "*"     "*"       "*"     "*"     "*"    " "       
+## 15  ( 1 ) "*"  "*"    "*"     "*"       "*"     "*"     "*"    " "       
+## 16  ( 1 ) "*"  "*"    "*"     "*"       "*"     "*"     "*"    " "       
+## 17  ( 1 ) "*"  "*"    "*"     "*"       "*"     "*"     "*"    "*"       
+## 18  ( 1 ) "*"  "*"    "*"     "*"       "*"     "*"     "*"    "*"       
+## 19  ( 1 ) "*"  "*"    "*"     "*"       "*"     "*"     "*"    "*"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(regfit.fwd, }\DataTypeTok{scale =} \StringTok{"Cp"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{chapter6_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\section{Model selection using a validation
+set}\label{model-selection-using-a-validation-set}
+
+Let's make a trainin and validation set, so that we can choose a good
+subset model. We will do it using a slightly different approach from
+what was done in the book.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{dim}\NormalTok{(Hitters)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 263  20
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{train =}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DecValTok{263}\NormalTok{), }\DecValTok{180}\NormalTok{, }\DataTypeTok{replace =} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{train}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   [1]  70  98 150 237  53 232 243 170 161  16 259  45 173  97 192 124 178
+##  [18] 245  94 190 228  52 158  31  64  92   4  91 205  80 113 140 115  43
+##  [35] 244 153 181  25 163  93 184 144 174 122 117 251   6 104 241 149 102
+##  [52] 183 224 242  15  21  66 107 136  83 186  60 211  67 130 210  95 151
+##  [69]  17 256 207 162 200 239 236 168 249  73 222 177 234 199 203  59 235
+##  [86]  37 126  22 230 226  42  11 110 214 132 134  77  69 188 100 206  58
+## [103]  44 159 101  34 208  75 185 201 261 112  54  65  23   2 106 254 257
+## [120] 154 142  71 166 221 105  63 143  29 240 212 167 172   5  84 120 133
+## [137]  72 191 248 138 182  74 179 135  87 196 157 119  13  99 263 125 247
+## [154]  50  55  20  57   8  30 194 139 238  46  78  88  41   7  33 141  32
+## [171] 180 164 213  36 215  79 225 229 198  76
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{regfit.fwd =}\StringTok{ }\KeywordTok{regsubsets}\NormalTok{(Salary}\OperatorTok{~}\NormalTok{., }\DataTypeTok{data =}\NormalTok{ Hitters[train,], }\DataTypeTok{nvmax =} \DecValTok{19}\NormalTok{, }\DataTypeTok{method =} \StringTok{"forward"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Now we will make predictions on the observations not used for training.
+We know there are 19 models, so we set up some vectors to record the
+errors. we have to do a bit of work here, because there is no predict
+method for \texttt{regsubsets}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{val.errors =}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DecValTok{19}\NormalTok{)}
+\NormalTok{?}\KeywordTok{rep}\NormalTok{()}
+\NormalTok{val.errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x.test =}\StringTok{ }\KeywordTok{model.matrix}\NormalTok{(Salary}\OperatorTok{~}\NormalTok{., }\DataTypeTok{data=}\NormalTok{Hitters[}\OperatorTok{-}\NormalTok{train,]) }\CommentTok{#Excluding the training data}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{19}\NormalTok{)\{}
+\NormalTok{  coefi =}\StringTok{ }\KeywordTok{coef}\NormalTok{(regfit.fwd, }\DataTypeTok{id =}\NormalTok{ i)}
+\NormalTok{  pred =}\StringTok{ }\NormalTok{x.test[,}\KeywordTok{names}\NormalTok{(coefi)]}\OperatorTok{%*%}\NormalTok{coefi}
+\NormalTok{  val.errors[i]=}\KeywordTok{mean}\NormalTok{((Hitters}\OperatorTok{$}\NormalTok{Salary[}\OperatorTok{-}\NormalTok{train]}\OperatorTok{-}\NormalTok{pred)}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\NormalTok{\}}
+
+\CommentTok{#x.test[,names(coefi)]}
+\CommentTok{#coefi}
+\CommentTok{#Hitters[-train,]}
+\CommentTok{#?model.matrix()}
+\CommentTok{#?coef}
+
+\KeywordTok{plot}\NormalTok{(}\KeywordTok{sqrt}\NormalTok{(val.errors), }\DataTypeTok{ylab =} \StringTok{"Root MSE"}\NormalTok{, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{300}\NormalTok{,}\DecValTok{400}\NormalTok{), }\DataTypeTok{pch=}\DecValTok{19}\NormalTok{, }\DataTypeTok{type =} \StringTok{"b"}\NormalTok{)}
+\KeywordTok{points}\NormalTok{(}\KeywordTok{sqrt}\NormalTok{(regfit.fwd}\OperatorTok{$}\NormalTok{rss[}\OperatorTok{-}\DecValTok{1}\NormalTok{]}\OperatorTok{/}\DecValTok{180}\NormalTok{), }\DataTypeTok{col =} \StringTok{"blue"}\NormalTok{, }\DataTypeTok{pch =} \DecValTok{19}\NormalTok{, }\DataTypeTok{type =} \StringTok{"b"}\NormalTok{)}
+\KeywordTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }\DataTypeTok{legend =} \KeywordTok{c}\NormalTok{(}\StringTok{"Training"}\NormalTok{, }\StringTok{"Validation"}\NormalTok{), }\DataTypeTok{col =} \KeywordTok{c}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }\StringTok{"black"}\NormalTok{), }\DataTypeTok{pch =} \DecValTok{19}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{chapter6_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+As we expect, the training error goes down monotonically as the model
+gets bigger, but not so for the validation error.
+
+This was a little tedious - not having a predict method for
+\texttt{regsubsets}. So we will write one!
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{predict.regsubsets =}\StringTok{ }\ControlFlowTok{function}\NormalTok{ (object, newdata, id, ...)\{}
+\NormalTok{  form =}\StringTok{ }\KeywordTok{as.formula}\NormalTok{(object}\OperatorTok{$}\NormalTok{call[[}\DecValTok{2}\NormalTok{]]) }\CommentTok{# Extracting formula from regsubsets$call}
+\NormalTok{  mat =}\StringTok{ }\KeywordTok{model.matrix}\NormalTok{(form, newdata)}
+\NormalTok{  coefi =}\StringTok{ }\KeywordTok{coef}\NormalTok{(object, }\DataTypeTok{id =}\NormalTok{ id)}
+\NormalTok{  mat[,}\KeywordTok{names}\NormalTok{(coefi)]}\OperatorTok{%*%}\NormalTok{coefi}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Model selection by
+cross-validation}\label{model-selection-by-cross-validation}
+
+We will do a 10 folds cross-validation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{11}\NormalTok{)}
+\NormalTok{folds =}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\KeywordTok{rep}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{, }\DataTypeTok{length =} \KeywordTok{nrow}\NormalTok{(Hitters)))}
+\NormalTok{folds}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   [1]  3  1  4  4  7  7  3  5  5  2  5  2  8  3  3  3  9  2  9  8 10  5  8
+##  [24]  5  5  5  5 10 10  4  4  7  6  7  7  7  3  4  8  3  6  8 10  4  3  9
+##  [47]  9  3  4  9  8  7 10  6 10  3  6  9  4  2  8  2  5  6 10  7  2  8  8
+##  [70]  1  3  6  2  5  8  1  1  2  8  1 10  1  2  3  6  6  5  8  8 10  4  2
+##  [93]  6  1  7  4  8  3  7  8  7  1 10  1  6  2  9 10  1  7  7  4  7  4 10
+## [116]  3  6 10  6  6  9  8 10  6  7  9  6  7  1 10  2  2  5  9  9  6  1  1
+## [139]  2  9  4 10  5  3  7  7 10 10  9  3  3  7  3  1  4  6  6 10  4  9  9
+## [162]  1  3  6  8 10  8  5  4  5  6  2  9 10  3  7  7  6  6  2  3  2  4  4
+## [185]  4  4  8  2  3  5  9  9 10  2  1  3  9  6  7  3  1  9  4 10 10  8  8
+## [208]  8  2  5  9  8 10  5  8  2  4  1  4  4  5  5  2  1  9  5  2  9  9  5
+## [231]  3  2  1  9  1  7  2  5  8  1  1  7  6  6  4  5 10  5  7  4  8  6  9
+## [254]  1  2  5  7  1  3  1  3  1  2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{table}\NormalTok{(folds)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## folds
+##  1  2  3  4  5  6  7  8  9 10 
+## 27 27 27 26 26 26 26 26 26 26
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cv.errors=}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{19}\NormalTok{)}
+\NormalTok{cv.errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+##  [1,]   NA   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+##  [2,]   NA   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+##  [3,]   NA   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+##  [4,]   NA   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+##  [5,]   NA   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+##  [6,]   NA   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+##  [7,]   NA   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+##  [8,]   NA   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+##  [9,]   NA   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+## [10,]   NA   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+##       [,14] [,15] [,16] [,17] [,18] [,19]
+##  [1,]    NA    NA    NA    NA    NA    NA
+##  [2,]    NA    NA    NA    NA    NA    NA
+##  [3,]    NA    NA    NA    NA    NA    NA
+##  [4,]    NA    NA    NA    NA    NA    NA
+##  [5,]    NA    NA    NA    NA    NA    NA
+##  [6,]    NA    NA    NA    NA    NA    NA
+##  [7,]    NA    NA    NA    NA    NA    NA
+##  [8,]    NA    NA    NA    NA    NA    NA
+##  [9,]    NA    NA    NA    NA    NA    NA
+## [10,]    NA    NA    NA    NA    NA    NA
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{(k }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{)\{}
+\NormalTok{  best.fit=}\KeywordTok{regsubsets}\NormalTok{(Salary}\OperatorTok{~}\NormalTok{., }\DataTypeTok{data=}\NormalTok{Hitters[folds}\OperatorTok{!=}\NormalTok{k,], }\DataTypeTok{nvmax =} \DecValTok{19}\NormalTok{, }\DataTypeTok{method =} \StringTok{"forward"}\NormalTok{)}
+  \ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{19}\NormalTok{)\{}
+\NormalTok{    pred =}\StringTok{ }\KeywordTok{predict}\NormalTok{(best.fit, Hitters[folds }\OperatorTok{==}\StringTok{ }\NormalTok{k,], }\DataTypeTok{id =}\NormalTok{ i)}
+\NormalTok{    cv.errors[k,i] =}\StringTok{ }\KeywordTok{mean}\NormalTok{( (Hitters}\OperatorTok{$}\NormalTok{Salary[folds }\OperatorTok{==}\StringTok{ }\NormalTok{k]}\OperatorTok{-}\NormalTok{pred)}\OperatorTok{^}\DecValTok{2}\NormalTok{ )}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+\NormalTok{rmse.cv =}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\KeywordTok{apply}\NormalTok{(cv.errors,}\DecValTok{2}\NormalTok{,mean))}
+\KeywordTok{plot}\NormalTok{(rmse.cv, }\DataTypeTok{pch =} \DecValTok{19}\NormalTok{, }\DataTypeTok{type =} \StringTok{"b"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{chapter6_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\section{Ridge regression and the
+Lasso}\label{ridge-regression-and-the-lasso}
+
+
+\end{document}

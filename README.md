@@ -21,16 +21,20 @@ Here are the learning materials:
 
 I took MATH 348 at DePauw University during Spring 2019. The topics of this class include:
 * Data manipulation and database operation
-* Monte - Carlo simulation
+* Monte Carlo simulation
 * Boostrap resampling
 * Data visualization
 * Numerical optimization
 
 Here is the course link: https://www.depauw.edu/academics/departments-programs/mathematics/courses/details/MATH/348/
 
-# Monte-Carlo Method for Molecular Modeling: CHEM 395
+# Monte Carlo Method for Molecular Modeling: CHEM 395
 
-Due to my interest in statistics, computing, and biochemistry, I design this class. I plan to execute it in Spring of 2020. If you are a student at DePauw and you are interested in the topic, please talk to me! 
+Due to my interest in statistics, computing, and biochemistry, I design this class. Topics of this class include: 
+* Random number generator
+* Monte Carlo optimization (numerical optimization, stochastic search, stochastic approximation)
+* Metropolis–Hastings Algorithms and Markov chain theory
+* The use of molecular modelling and cheminformatics to discover and design new molecules
 
 # Deep Learning with R
 

@@ -32,6 +32,6 @@ Here is the course link: https://www.depauw.edu/academics/departments-programs/m
 
 Due to my interest in statistics, computing, and biochemistry, I design this class. I plan to execute it in Spring of 2020. If you are a student at DePauw and you are interested in the topic, please talk to me! 
 
-# Deep Learning with R:
+# Deep Learning with R
 
-François Chollet and J.J. Allaire wrote a book to introduce deep learning in R. This is my plan (sometime soon...) to read this book ... 
+François Chollet and J.J. Allaire wrote a book to introduce deep learning in R. I probably will spend Chrismas this year on this book (hopefully if I won't lose all my time in the family gathering ... )

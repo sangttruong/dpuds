@@ -8,11 +8,13 @@ This is my attempt to explore machine learning and data mining from a statistica
 
 The upload files are homework from chapter 1 to 10 in the books. 
 
-# Introductio to Statistical Computing
+# Introductio to Statistical Computing: MATH 348
 
-This is a class I took at DePauw University. This is where I first learn R and RStudio. The topics in this class include:
+I took MATH 348 at DePauw University during Spring 2019. The topics of this class include:
 * Data manipulation and database operation
 * Monte - Carlo simulation
 * Boostrap resampling
 * Data visualization
 * Numerical optimization
+
+Course link: https://www.depauw.edu/academics/departments-programs/mathematics/courses/details/MATH/348/

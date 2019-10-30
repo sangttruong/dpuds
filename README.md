@@ -27,3 +27,11 @@ I took MATH 348 at DePauw University during Spring 2019. The topics of this clas
 * Numerical optimization
 
 Here is the course link: https://www.depauw.edu/academics/departments-programs/mathematics/courses/details/MATH/348/
+
+# Monte-Carlo Method for Molecular Modeling: CHEM 395
+
+Due to my interest in statistics, computing, and biochemistry, I design this class. I plan to execute it in Spring of 2020. If you are a student at DePauw and you are interested in the topic, please talk to me! 
+
+# Deep Learning with R:
+
+François Chollet and J.J. Allaire wrote a book to introduce deep learning in R. This is my plan (sometime soon...) to read this book ... 

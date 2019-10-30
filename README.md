@@ -17,7 +17,7 @@ Here are the learning materials:
 * The Elements of Statistical Learning: Data Mining, Inference, and Prediction: https://web.stanford.edu/~hastie/ElemStatLearn/
 * Unofficial Key of An Introduction ot Statistical Learning: http://blog.princehonest.com/stat-learning/
 
-# Introductio to Statistical Computing: MATH 348
+# Introduction to Statistical Computing: MATH 348
 
 I took MATH 348 at DePauw University during Spring 2019. The topics of this class include:
 * Data manipulation and database operation
@@ -27,5 +27,3 @@ I took MATH 348 at DePauw University during Spring 2019. The topics of this clas
 * Numerical optimization
 
 Here is the course link: https://www.depauw.edu/academics/departments-programs/mathematics/courses/details/MATH/348/
-
-# Mini project: Statistical learning in R

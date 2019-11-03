@@ -39,3 +39,8 @@ Due to my interest in statistics, computing, and biochemistry, I design this cla
 # Deep Learning with R
 
 François Chollet and J.J. Allaire wrote a book to introduce deep learning in R. I probably will spend Chrismas this year on this book (hopefully if I won't lose all my time in the family gathering ... )
+
+# Numerical Linear Algebra
+This course: https://github.com/fastai/numerical-linear-algebra/blob/master/README.md. 
+
+Great class to learn about linear algebra... I need to review it soon too... Just a bit busy these days ...

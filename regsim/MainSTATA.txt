@@ -1,0 +1,268 @@
+use I:\18191-ECON385A\SANGTRUONG_2021\Project\Data\cps_00017.dta\cps_00017.dta
+
+# Create dummy variable for gender
+gen male=1 if sex==1
+replace male=0 if sex==2
+
+# Recode education year
+gen educyear=1 if educ==020
+replace educyear=2.5 if educ==010
+replace educyear=5.5 if educ==020
+replace educyear=7.5 if educ==030
+replace educyear=9 if educ==040
+replace educyear=10 if educ==050
+replace educyear=11 if educ==060
+replace educyear=12 if educ==070
+replace educyear=11 if educ==071
+replace educyear=12 if educ==073
+replace educyear=13 if educ==081
+replace educyear=14 if educ==091
+replace educyear=14 if educ==092
+replace educyear=16 if educ==111
+replace educyear=18 if educ>=123
+
+# Create dummy variable for smoke
+gen smoke=0 if tsmker==01
+replace smoke=1 if tsmker==03
+replace smoke=1 if tsmker==04
+
+# Create dummy variable for public restriction
+gen restpub=0 if twkpublic==01
+replace restpub=0 if twkpublic==02
+replace restpub=1 if twkpublic==03
+replace restpub=0 if twkpublic==05
+
+# Create dummy variable for home restriction
+gen resthome=1 if trulehh==01
+replace resthome=0 if trulehh==02
+replace resthome=0 if trulehh==03
+
+# Recode tobaco price for each state
+gen price=5.31 if statefip==1
+replace price=9.02 if statefip==2
+replace price=6.92 if statefip==4
+replace price=5.66 if statefip==5
+replace price=5.61 if statefip==6
+replace price=5.44 if statefip==8
+replace price=8.60 if statefip==9
+replace price=5.86 if statefip==10
+replace price=7.51 if statefip==11
+replace price=5.74 if statefip==12
+replace price=4.82 if statefip==13
+replace price=8.94 if statefip==15
+replace price=5.12 if statefip==16
+replace price=7.40 if statefip==17
+replace price=5.41 if statefip==18
+replace price=5.81 if statefip==19
+replace price=5.79 if statefip==20
+replace price=4.86 if statefip==21
+replace price=5.46 if statefip==22
+replace price=6.67 if statefip==23
+replace price=6.56 if statefip==24
+replace price=8.93 if statefip==25
+replace price=6.67 if statefip==26
+replace price=7.92 if statefip==27
+replace price=5.13 if statefip==28
+replace price=4.53 if statefip==29
+replace price=6.29 if statefip==30
+replace price=5.23 if statefip==31
+replace price=6.39 if statefip==32
+replace price=6.34 if statefip==33
+replace price=7.38 if statefip==34
+replace price=6.43 if statefip==35
+replace price=10.16 if statefip==36
+replace price=4.74 if statefip==37
+replace price=4.71 if statefip==38
+replace price=6.07 if statefip==39
+replace price=5.71 if statefip==40
+replace price=5.91 if statefip==41
+replace price=6.47 if statefip==42
+replace price=8.62 if statefip==44
+replace price=5.03 if statefip==45
+replace price=6.22 if statefip==46
+replace price=4.99 if statefip==47
+replace price=5.95 if statefip==48
+replace price=6.37 if statefip==49
+replace price=8.12 if statefip==50
+replace price=5.03 if statefip==51
+replace price=7.85 if statefip==53
+replace price=4.90 if statefip==54
+replace price=7.45 if statefip==55
+replace price=5.17 if statefip==56
+
+# Generate log price
+gen lnprice = log(price)
+
+# Create dummy variable for "Other race"
+gen otherrace=1 if race>100
+replace otherrace=0 if race==100
+replace otherrace=0 if race==200
+
+# Create dummy variable for "White"
+gen white=1 if race==100
+replace white=0 if race>100
+replace white=0 if race<100
+
+# Create dummy variable for "Asian"
+gen asian=1 if race==651
+replace asian=0 if race>651
+replace asian=0 if race<651
+
+# Create dummy variable for "Black"
+gen black=1 if race==200
+replace black=0 if race>200
+replace black=0 if race<200
+replace otherrace=0 if race==200
+replace otherrace=0 if race==651
+
+# Create dummy variable for "Hispan"
+gen hisp=0 if hispan==000
+replace hisp=1 if hispan==100
+replace hisp=1 if hispan==200
+replace hisp=1 if hispan==300
+replace hisp=1 if hispan==400
+replace hisp=1 if hispan==500
+replace hisp=1 if hispan==411
+replace hisp=1 if hispan==412
+
+# Recode family income
+gen famincome=0.5000000 if faminc==100
+replace famincome=0.1000000 if faminc==110
+replace famincome=0.0500000 if faminc==111
+replace famincome=0.0749500 if faminc==112
+replace famincome=0.1499500 if faminc==120
+replace famincome=0.1249500 if faminc==121
+replace famincome=0.1749500 if faminc==122
+replace famincome=0.2499500 if faminc==130
+replace famincome=0.2249500 if faminc==131
+replace famincome=0.2749500 if faminc==132
+replace famincome=0.3499500 if faminc==140
+replace famincome=0.3249500 if faminc==141
+replace famincome=0.3749500 if faminc==142
+replace famincome=0.4499500 if faminc==150
+replace famincome=0.6499500 if faminc==200
+replace famincome=0.6249500 if faminc==210
+replace famincome=0.5499500 if faminc==220
+replace famincome=0.6999500 if faminc==230
+replace famincome=0.6749500 if faminc==231
+replace famincome=0.6499500 if faminc==232
+replace famincome=0.7249500 if faminc==233
+replace famincome=0.7499500 if faminc==234
+replace famincome=0.8749500 if faminc==300
+replace famincome=0.7749500 if faminc==310
+replace famincome=0.8249500 if faminc==320
+replace famincome=0.8749500 if faminc==330
+replace famincome=0.8499500 if faminc==340
+replace famincome=0.9499500 if faminc==350
+replace famincome=1.2499500 if faminc==400
+replace famincome=1.0499500 if faminc==410
+replace famincome=1.1499500 if faminc==420
+replace famincome=1.1249500 if faminc==430
+replace famincome=1.0999500 if faminc==440
+replace famincome=1.2499500 if faminc==450
+replace famincome=1.3499500 if faminc==460
+replace famincome=1.3749500 if faminc==470
+replace famincome=1.3499500 if faminc==480
+replace famincome=1.7499500 if faminc==500
+replace famincome=1.5499500 if faminc==510
+replace famincome=1.6499500 if faminc==520
+replace famincome=1.7499500 if faminc==530
+replace famincome=1.6249500 if faminc==540
+replace famincome=1.8749500 if faminc==550
+replace famincome=1.8999500 if faminc==560
+replace famincome=2.2499500 if faminc==600
+replace famincome=3.7499500 if faminc==700
+replace famincome=2.7499500 if faminc==710
+replace famincome=3.2499500 if faminc==720
+replace famincome=3.7499500 if faminc==730
+replace famincome=4.4999500 if faminc==740
+replace famincome=5.0000000 if faminc==800
+replace famincome=6.2499500 if faminc==810
+replace famincome=5.4999500 if faminc==820
+replace famincome=6.7499500 if faminc==830
+replace famincome=7.5000000 if faminc==840
+replace famincome=8.7499500 if faminc==841
+replace famincome=12.4999500 if faminc==842
+replace famincome=15.0000000 if faminc==843
+replace famincome=1.4499500 if faminc==490
+
+# Recode quit
+gen quit=1 if tsmker==02
+replace quit=0 if tsmker==03
+replace quit=0 if tsmker==04
+
+# Generate age square
+gen agesq=age^2
+
+# Remove observation with age below 18
+drop if age<18
+
+# Instal ESTOUT for organizing table
+ssc install estout
+
+#Summary statistic
+summarize smoke quit educyear resthome restpub lnprice famincome age agesq male white black asian hisp
+
+# Probit regression: smoke 1
+probit smoke educyear [pw=wtfinl], vce(robust)
+est sto smoke1
+margins, dydx(educyear) post
+est sto marsmoke1
+
+# Probit regression: smoke 2
+probit smoke educyear resthome restpub [pw=wtfinl], vce(robust)
+est sto smoke2
+margins, dydx(educyear resthome restpub) post
+est sto marsmoke2
+
+# Probit regression: smoke 3
+probit smoke educyear resthome restpub lnprice famincome [pw=wtfinl], vce(robust)
+est sto smoke3
+margins, dydx(educyear resthome restpub lnprice famincome) post
+est sto marsmoke3
+
+# Probit regression: smoke 3
+probit smoke educyear resthome restpub lnprice famincome age agesq male white black asian hisp [pw=wtfinl], vce(robust)
+est sto smoke3
+margins, dydx(educyear resthome restpub lnprice famincome age agesq male white black asian hisp) post
+est sto marsmoke3
+
+# Linear regression: smoke OLS
+reg smoke educyear resthome restpub lnprice famincome age agesq male white black asian hisp [pw=wtfinl], vce(robust)
+est sto smoke_ols
+
+# Summary table: smoke
+esttab smoke1 marsmoke1 smoke2 marsmoke2 smoke3 marsmoke3 smoke_ols, nonumber title("Regress Smoke on Xs") mtitle("Smoke1" "PPI_1" "Smoke2" "PPI_2" "Smoke3" "PPI_3" "Smoke_OLS") se(%6.5f) scalar(F) r2
+
+# Probit regression: quit 1
+probit quit educyear [pw=wtfinl], vce(robust)
+est sto quit1
+margins, dydx(educyear) post
+est sto marquit1
+
+# Probit regression: quit 2
+probit quit educyear resthome restpub [pw=wtfinl], vce(robust)
+est sto quit2
+margins, dydx(educyear resthome restpub) post
+est sto marquit2
+
+# Probit regression: quit 3
+probit quit educyear resthome restpub lnprice famincome age male white black asian hisp [pw=wtfinl], vce(robust)
+est sto quit3
+margins, dydx(educyear resthome restpub lnprice famincome age male white black asian hisp) post
+est sto marquit3
+
+# Linear regression: quit 4
+reg quit educyear resthome restpub lnprice famincome age male white black asian hisp [pw=wtfinl], vce(robust)
+est sto quit4
+
+# Summary table: quit
+esttab quit1 marquit1 quit2 marquit2 quit3 marquit3 quit4, nonumber title("Regress Quit on Xs") mtitle("Quit1" "PPI_1" "Quit2" "PPI_2" "Quit3" "PPI_3" "Quit4(OLS)") se(%6.5f) scalar(F) r2
+
+# Marginal analysis: smoke
+probit smoke resthome restpub lnprice educyear famincome age agesq male white black asian hisp [pw=wtfinl], vce(robust)
+margins, at(educyear=(9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20) resthome=(0, 1)) plot(title(Predicted Probabilities of Smoking by Education Year))
+
+# Marginal analysis: quit
+probit quit resthome restpub lnprice educyear famincome age male white black asian hisp [pw=wtfinl], vce(robust)
+margins, at(educyear=(9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20) resthome=(0, 1)) plot(title(Predicted Probabilities of Quitting by Education Year))

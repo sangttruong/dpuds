@@ -1,0 +1,39 @@
+---
+title: "Smoking classification"
+author: "Sang Truong"
+date: "10/23/2019"
+output: html_document
+---
+
+# Loading the data
+
+```{r}
+raw = read.csv("/Users/sangtruong_2021/Desktop/raw.csv")
+```
+
+# Smoking classification
+
+```{r}
+smoke <- raw[,-16]
+smoke <- na.omit(smoke)
+dim(smoke)
+smoke
+
+index <- sample(1:19520, 5000)
+train <- smoke[index,]
+train
+test <- smoke[-index,]
+
+library(neuralnet)
+n <- neuralnet(smoke~age+male+educyear+restpub+resthome+lnprice+white+asian+black+hisp+famincome+agesq, 
+              data=train,
+              hidden = c(5,3), 
+              linear.output = FALSE)
+plot(n)
+```
+
+```{r}
+quit = raw[,-15]
+quit = na.omit(quit)
+dim(quit)
+```

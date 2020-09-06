@@ -1,1 +1,3 @@
+# **Titanic: Machine Learning from Disaster**
 
+In this analysis, I evaluate the performance of several approaches on a classification problem, the survival of Titanic passengers. Logistic Regression, Gausian Naive Bayes, Support Vector Machine, k-Nearest Neighbor, Decision Tree, and Random Forest were considered. I apply feature engineer to recode 2 categorical variables. Synthetic Minority Over-sampling Technique was used to overcome the issue of imbalance data. Stattistical interpolation was used to handle missing data. I found that, among the considered methods, Random Forest yields the highest in-sample predicting accuracy (85%) with cross-validation.

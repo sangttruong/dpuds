@@ -1,0 +1,367 @@
+---
+title: "OPTIMIZING OPERATION STRATEGY"
+subtitle: "GitHub: https://github.com/sangttruong/XTernDataScience2019"
+author: "Sang Truong-XTern 2019 Applicant"
+output:
+  html_document:
+    code_download: yes
+    highlight: "zenburn"
+    theme: "flatly"
+    toc: yes
+    toc_float: yes
+---
+
+**Abstract:** In this analysis, I optimized the charging schedule using Traveling Saleperson Problem (TSP) package in R. With some additional assumptions, I propose a charging strategy with the total operation time cost of about 10 days. In addition, I found that (0.22, 0.13) is the most popular scooter location.
+
+# **1. Preliminary analyses**
+**Figure 1** represents 25668 scooters in the dataset clustering in 19 groups. Based on this observation, I classify the data into 19 cluster, which simplifies the problem and reduces the computational cost. 2 common methods that are use for clustering are k-mean clustering and hierachial clustering. Since the cluster-cluster distances are significantly larger than the scooter-scooter distance within a cluster, I choose to use hierachial clustering. After partioning the whole dataset into 19 clusters, I compute their medoids as a way to represent each cluster. **Figure 2** shows that the medoids locate at the center of each cluster, indicating that hierachial clustering did well on partitioning the raw dataset.
+
+```{r, warning = FALSE}
+# Load the raw data
+setwd("/Users/sangtruong_2021/Desktop/XTernDataScience2019")
+raw = read.csv("raw.csv")
+
+# Review raw dataset
+head(raw)
+dim(raw)
+plot(raw[, c(2, 3)], cex = 2, pch = 1, lwd = 2, col = "grey", main = "Figure 1. 25668 scooters grouping in 19 clusters")
+
+# Hierachial cluster
+library(cluster)
+hclust = hclust(dist(raw[, c(2, 3)]), method = "complete")
+plot(hclust)
+cst = cutree(hclust, 19)
+x = cbind(raw, cst)
+
+# Generate starting and ending point
+u = matrix(c(20.19, 20.19,0), ncol = 3)
+colnames(u) = c("xcoordinate", "ycoordinate", "cstNum")
+
+# Compute medoids for each cluster
+for (i in 1:19){
+  v = pam(x[x$cst == i, c(2, 3)], 1)$medoids
+  cstNum = matrix(i, ncol = 1)
+  v = cbind(v, cstNum)
+  u = rbind(u, v)
+}
+
+# Format u to dataframe and print it out
+u = data.frame(u)
+print(u)
+
+# Plotting 19 clusters in raw data and their medoids
+plot(x[, c(2, 3)], cex = 2, pch = 20, lwd = 2, col = "gray", main = "Figure 2. Medoids of 19 clusters")
+points(u[-1, ], cex = 1, pch = 20, lwd = 2, col = "blue")
+with(u[-1, ], text(ycoordinate~xcoordinate, labels = cstNum, pos = 4))
+```
+
+# **2. Inside each cluster**
+Among all cluster, the average power levels within each cluster is about 2.5. Indeed, the graph below shows the average power level by cluter. The height of each column represents the average power level within that cluster.
+
+![Chart 1. Bar chart of average power level by cluster](pivot1.png)
+
+In addition, all clusters have approximately equal amount of scooter at each power level. Indeed, the below chart represent the count of power level by cluster. Each column represents 1 cluster and the height of the column represents the total amount of scooter within that cluster. Each column can be broken down into 6 components, which are 6 levels of power (from 0 to 5).
+
+**Note:** For more detail about how to generate these charts (and their corresponding pivot tables), please see to Section 5.3. Section 5.3 will provide a more interactive version of these charts for your reference.
+
+Looking at the below chart, I found that cluster 4 (with medoid at (0.23, 0.13)) is the most popular location with 2205 scooters (See **Figure 2* and **Dataframe u** above, which contain the location of all medoids).
+
+![Chart 2. Stacked bar chart of number of scooters by cluster, breaking down by power levels](pivot2.png)
+
+Inside of each cluster, for each power level, scooters are random geographic distributed. For example, **Figure 3** presents the all scooters of cluster 1, 5, 10, and 19. 6 colors represent the power level of each scooter (while, black, dark blue, light blue, and green). Therefore, if we sample (cluster sampling) some scooters from any cluster, the sample is likely to have scooters all levels of power.
+
+```{r, warning = FALSE}
+# Visualize cluster 1, 5, 10, and 19
+plot(x[x$cst == 1, c(2, 3)], cex = 1, col = x$power_level, pch = 20, main = "Figure 3.1. Cluster 1")
+plot(x[x$cst == 5, c(2, 3)], cex = 1, col = x$power_level, pch = 20, main = "Figure 3.2. Cluster 5")
+plot(x[x$cst == 10, c(2, 3)], cex = 1, col = x$power_level, pch = 20, main = "Figure 3.3. Cluster 10")
+plot(x[x$cst == 19, c(2, 3)], cex = 1, col = x$power_level, pch = 20, main = "Figure 3.4. Cluster 19")
+```
+
+Considering that all clusters have approximately equal amount of scooter at each power level, if we sample scooters from any cluster, the sample with likely to have scooters with all power levels and each power level will have (roughly) the same amount of scooters. 
+
+# **3. Traveling distance**
+
+Our challenge can be rephrased as following: Considering n points on a graph, find the shortest way from 1 point to go through every other points and come back. This is a version of the Traveling Saleperson Problem (TSP). This problem can be solved by using TSP package in R.
+
+According to TSP documentation, TSP solver with Repetitive Nearest Neighbor method "starts with a tour containing a random city. Then the algorithm always adds to the last city on the tour the nearest not yet visited city. The algorithm stops when all cities are on the tour. Repetitive nearest neighbor constructs a nearest neighbor tour for each city as the starting point and returns the shortest tour found." There are many more methods that can be used with TSP solver, but I choose to use Repetitive Nearest Neighbor since it is often give a stable result, which in many cases is the closest to optimal path. Although no exact solution is guaranteed, TSP solver provides a heuristic solution for the TSP problem, which has significantly lower computational cost.
+
+For this analysis, I consider these following paths:  
+
+a) Traveling from the starting point (20.19, 20.19) to clusters and back: Total Path = TPath = 58.8 miles.  
+b) Traveling from cluster to cluster within 19 clusters: Cluter-to-cluter path = CPath =  5.5 miles.  
+c) Traveling within a cluster: only consider scooters with power level under 5. Within-a-cluster path = WPath.  
+
+Results from TSP solver:  
+(a) TPath = 58.8 miles.  
+(b) CPath =  5.5 miles.  
+(c) WPath = 1.2 miles on average (for cluster 1, 5, 10, and 19). These optimal paths tend to go through scooters with different power level sequentially. The number of scooters that has power level under 5 is 21325.
+
+For more visualization about these optimal paths are shown in **Figure 4**. It is worth noting that, the there are 5 colors in **Figure 4.3.1 to 4.3.4** (white, black, blue, green, red). The present of white make it seems like some traveling paths bent. Indeed, if we prepresent all power level in back, there is not any ziczac between 2 dots anymore (**Figure 4.3.5**)
+
+```{r, warning = FALSE}
+# (Install and ) Import Traveling Saleperson Problem (TSP) package
+# Only install the package if you have not had it installed
+# install.packages("TSP")
+library(TSP)
+
+# Total path
+TPath = ETSP(u[, -3])
+TPathTour = solve_TSP(TPath, method = "repetitive_nn", two_opt = TRUE)
+print(TPathTour)
+plot(TPath, TPathTour, cex=1, pch=20, lwd=2, col = "blue", main = "Figure 4.1. Total path")
+
+# Cluter-to-cluster path
+CPath = ETSP(u[-1, -3])
+CPathTour = solve_TSP(CPath, method = "repetitive_nn", two_opt = TRUE)
+print(CPathTour)
+plot(CPath, CPathTour, cex = 1, pch = 20, lwd = 2, col = "blue", main = "Figure 4.2. Cluster-to-cluster path")
+
+# Within cluter path
+xU5 = x[x$power_level < 5, ]
+print(dim(xU5))
+
+## Cluster 1
+WPath1 = ETSP(xU5[xU5$cst == 1, c(2, 3)])
+WPathTour1 = solve_TSP(WPath1, method = "repetitive_nn", two_opt = TRUE)
+print(WPathTour1)
+plot(WPath1, WPathTour1, cex = 1, pch = 20,col = xU5[xU5$cst == 1, 4], main = "Figure 4.3.1 Within cluster 1 path")
+
+## Cluster 5
+WPath5 = ETSP(xU5[xU5$cst == 5, c(2, 3)])
+WPathTour5 = solve_TSP(WPath5, method = "repetitive_nn", two_opt = TRUE)
+print(WPathTour5)
+plot(WPath5, WPathTour5, cex = 1, pch = 20,col = xU5[xU5$cst == 5, 4], main = "Figure 4.3.2. Within cluster 5 path")
+
+## Cluster 10
+WPath10 = ETSP(xU5[xU5$cst == 10, c(2, 3)])
+WPathTour10 = solve_TSP(WPath10, method = "repetitive_nn", two_opt = TRUE)
+print(WPathTour10)
+plot(WPath10, WPathTour10, cex = 1, pch = 20,col = xU5[xU5$cst == 10, 4], main = "Figure 4.3.3 Within cluster 10 path")
+
+## Cluster 19
+WPath19 = ETSP(xU5[xU5$cst == 19, c(2, 3)])
+WPathTour19 = solve_TSP(WPath19, method = "repetitive_nn", two_opt = TRUE)
+print(WPathTour19)
+plot(WPath19, WPathTour19, cex = 1, pch = 20,col = xU5[xU5$cst == 19, 4], main = "Figure 4.3.4. Within cluster 19 path")
+
+## Cluster 19 with all dot in black
+plot(WPath19, WPathTour19, cex = 1, pch = 20, main = "Figure 4.3.5. Within cluster 19 path (all dots in black")
+```
+
+# **4. Optimal operation strategy**
+
+To formulate the optimal charging strategy, I adopt these following assumptions:
+
+1. There is only one megabus and the bus is currently at (20.19, 20.19).  
+
+2. The bus can take maximum 100 scooters.  
+
+3. There is a charging station at (20.19, 20.19) with 1000 charger.  
+
+4. The charging capacity of the bus is the same with charging capacity of a charger in the charging station. In other words, if a scooter needs 3 hours charging, it can be fully charge on the bus or in the charging station.  
+
+Recall important information:  
+
+1. Cluster sampling 100 bus from any cluster, we will likely get 100 bus with roughly equal amount of each power level. 
+
+2. Bus maximum speed: 50 miles/hour  
+
+3. Length of total path (**Figure 4.1**): $TPath = 58.8 miles$  
+
+4. Length of cluster-to-cluster path (**Figure 4.2**): $CPath = 5.5 miles$  
+
+5. Average length of within-cluster path (**Figure 4.3.1, 4.3.2, 4.3.3**): $WPath = 1.2 miles$  
+
+6. There are 25668/19 $\approx$ 1359 scooters per cluster on average
+
+Based on the above information, the length of 1-direction-trip from charging station to 19 clusters is $L = \frac{TPath - CPath}{2} = \frac{58.7-5.5}{2} = 26.65$ miles. Therefore, it take the bus about $26.65/50 \approx 0.5$ hour for a 1 direction trip from charging station to the clusters.
+
+Since the bus can only park and start at charging station (20.19, 20.19), it has to constantly travel back and forth between charging station and clusters to pick up and drop off scooters. 
+
+Since the capacity of the bus is much smaller than the number of scooters in each cluster, the bus should come to a certain cluster to pick scooters up and go back to charging station, not going to multiple clusters at a time.
+
+Since $L >> CPath >> WPath$, it is appropriate to disregard $CPath$ and $WPath$ to simplify the calculation. 
+
+Considering these information, I come up with the following charging strategy:
+
+The bus will come to clusters to pick up 100 scooters and bring back to charging station. The bus will also charge the scooters on the way. For every pickup, the bus will pick up 100 scooters: 20 scooters each power level from 0 to 4. The bus will not pick up scooters with power level of 5. After dropping off the scooters at the charging station for further charging, the bus will come back to clusters to pick up more scooters. Details about these trips are as following (**Figure 5**): 
+
+**1. Trip 1:** the bus coming to clusters from charging station ("<" in line 1).
+
+**2. Trip 2:** the bus comes back to charging station (">" in line 2). The bus brings back 100 scooters (5 blues bar in line 2. 5 colors represent 5 power levels from 0 to 4. For example, lightest blue is power level of 4, meaning these scooters only need 1 hour charging). 
+
+**3. Trip 3:** the bus comes to cluster from charging station ("<" in line 3). On this trip, the bus also brings 20 scooters with **pick-up** power level of 4 from trip 2 (red down-arrow pointing from line 2 to line 3). At the end of trip 2, the power level of these scooters is 4.5. At the end of trip 3, the power level of these scooter will be 5, indicating that they are ready to be dropped off at the clusters. 
+
+**4. Trip 4:** the bus comes back to charging station (">" in line 4). The bus brings back 100 scooters (5 blues bar in line 4).
+
+**5. Trip 5:** the bus come to clusters from charging station ("<" in line 5). On this trip, the bus also bring 40 scooters with **pick-up** power level of 3 and 4 from trip 2 and 4 (2 red down-arrows pointing from line 2 and line 4 to line 5). At the end of trip 5, these 40 scooters will be fully charged, indicating that they are ready to be dropped off at the clusters. 
+
+Following **Figure 5** line by line, we will find that at the end of trip 11, the bus will be able to bring 100 scooters from charging station to the clusters to drop them off, meaning it will reach its maximum capacity of transportation. 20 of these 100 scootes were brought to the charging station from trip 2 with power level of 0 (the longest red arrow pointing from line 2 to line 11). From now on, for every trip (back and forth), the bus will be full of scooters. For example, in trip 12 (going from clusters to charging station), the bus will carry 100 scooters. In trip 13, the bus will bring 100 scooters from charging station back to the city.
+
+After 10 trip, the operation of the bus reach steady state: for every hour, there will be 100 scooters that are fully charged. It will take about 10 hours to get in and out of steady state (as we can see, we need 5 hours, or 10 trips, to get in the steady state. Similary, we need about 5 hour (or last 10 trips) to get out of the steady state). With this operation strategy, it will take $\approx 10 + 21325/100 = 223.25$ hours to fully charge all 21325 scooters (these are the ones with power level below 5). In other word, with the proposed operation strategy, it will take about 10 days to fully charge all of the scooters.
+
+![Figure 5. Proposed operation strategy. "<" indicates trips from charging station to cluster. ">" indicates trips from clusters to charging station. Each blue bar represents 20 scooters. The darker the color, the longer the scooter need to be charge. The red down-arrow indicates scooters that are ready to be brought back from the charging station to the clusters](strategy.png)
+
+# **5. Some final thoughts**
+
+## **5.1. Trouble shooting for hierachial clustering**
+
+Running hierachial clustering on the whole dataset in R (**Section 1**) can be slow (or even impossible) due to the limit of memory. One remedy is to conduct hierachial clustering on Jupiter Notebook as following. Please ignore this if you do not have memory constrainst. 
+
+```{r, eval = FALSE, warning=FALSE}
+# Import some important package
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.pyplot import cm
+from sklearn.cluster import AgglomerativeClustering
+import scipy.cluster.hierarchy as sch
+
+# Load dataset
+raw = read.csv("Raw.csv")
+raw.head()
+
+# Hierachial clustering
+x = raw.iloc[:, [1, 2]].values
+dendrogram = sch.dendrogram(sch.linkage(x, method = 'complete'))
+model = AgglomerativeClustering(n_clusters = 19, affinity = 'euclidean', linkage = 'complete')
+model.fit(x)
+labels = model.labels_
+```
+
+Another way to deal with low memory system is employing both k-mean clustering and hierachial clustering (divide and conquer strategy), which results the same output as the previous methods. Although k-mean clustering can be conducted on the whole raw dataset, it did not give a good classification with k = 19 (but it did a great job with k = 2). As you can see below, this method is longer and it needs additional human decision on the way. Again, please ignore this if you do not have memory constrainst. 
+
+```{r, warning = FALSE}
+# K-Mean clustering on raw data with k = 2
+km.x2 = kmeans(raw[, c(2, 3)], 2, 100)
+plot(raw[, c(2, 3)],col = km.x2$cluster, cex = 2, pch = 1, lwd = 2)
+cst = km.x2$cluster
+x = cbind(raw,cst)
+
+# Separate the data into 2 portions
+x1 = x[x$cst == 1, -5]
+x2 = x[x$cst != 1, -5]
+
+# Hierarchical Clustering on portion 1
+hclust1 = hclust(dist(x1[, c(2, 3)]), method = "complete")
+plot(hclust1)
+# Check to see how many clusters we have (from dendrogram) to decide how to cut the tree in the step
+cst = cutree(hclust1, 10)
+x1 = cbind(x1, cst)
+
+# Hierarchical Clustering on portion 2
+hclust2 = hclust(dist(x2[, c(2, 3)]), method = "complete")
+plot(hclust2)
+# Decide how to cut the tree based on the number of cluster in portion 1
+cst = cutree(hclust2, 9)
+# Increment cluster number by 10 (or 9) unit so that it will not overlapping with cluster number in portion 1. 
+cst = cst + 10
+x2 = cbind(x2, cst)
+
+# Combind the result after hierarchical clustering
+x = rbind(x1, x2)
+plot(x[, c(2, 3)], col = x$cst, cex = 2, pch = 20, lwd = 2)
+
+head(x)
+
+# K-Mean clustering on raw data with k = 19
+km.x19 = kmeans(raw[,c(2,3)], 19, 100)
+plot(raw[, c(2, 3)],col = km.x19$cluster, cex = 2, pch = 1, lwd = 2, main = "Figure 6. K-Mean clustering with k = 19 does not work on raw dataset")
+```
+
+## **5.2. Traveling Saleperson Problem**
+
+With an attempt to solve the TSP problem exactly on the whole dataset, Concorde method was investigated. Concorde is one of the fastest solver for network optimization. However, the number of nodes limited with concord method are 15,112, which is far less than the total number of scooters that need to be visited (21325 scooters). Therefore, Concorde cannot be used.
+
+Vehicle Routing Problem (VRP) is more related to this problem than TSP. However, I did not find any package in R or Python to support the optimization. Therefore, I decide to use TSP with some additional analyses at the end to figure out the optimal charging strategy. 
+
+## **5.3. Pivot table, RShiny, and R Cloud issue**
+
+I use rpivotTable package in R to generate 2 pivot tables and their corresponding interactive visualizations (**Chart 1** and **Chart 2**). Here are the code that I use to generate these charts.
+
+```{r, eval = FALSE, warning=FALSE}
+# (Install and ) Loading rpivotTable
+# install.packages("rpivotTable")
+library(rpivotTable)
+
+#Generate bar chart of average power level by cluster
+rpivotTable(x, rows = "cst", vals = "power_level",
+            aggregatorName = "Average", rendererName = "Bar Chart")
+
+# Generate number of scooters by cluster, breaking down by power levels
+rpivotTable(x, rows = "power_level", cols = "cst", 
+            aggregatorName = "Count",  rendererName = "Stacked Bar Chart")
+```
+
+If we evaluate the able chunk of code, we will get the interactive version of **Chart 1** and **Chart 2**. With this version, we can hover throught the graph for more detail about each cluster. The charts can also be converted into a pivot table (drop down menu on the left up corner). The only problem is that when I render the whole R Notebook page to the html format, these chart might overflow on the page, making the text unreadable. Here is my attempt to fix this problem: I create a dashboard inside of R Markdown, so that I can capture these 2 above chart in a box. The dashboard is created by R Shiny package for application development. If I want to render this on my HTML file, I need to pay for a premium account on R Cloud. Unfortunately, I did not have any premium account, so I was not able to render this interactive charts on my HTML page. However, the static charts that I have on **Section 2** already provide enough information to to make the conclusion.
+
+```{r, eval = FALSE, warning=FALSE}
+library(shiny)
+library(shinydashboard)
+library(rpivotTable)
+
+# Chart 1: Average power level by cluster
+header <- dashboardHeader(disable = TRUE)
+sidebar <- dashboardSidebar(disable = TRUE)
+body <- dashboardBody(
+  box(title = "Pivot",
+      width ="100%",
+      height = "100%",
+      status = "primary",
+      solidHeader = TRUE,
+      tags$head(tags$style(type = 'text/css','#test{ overflow-x: scroll; }')),
+      rpivotTableOutput("test")
+))
+shinyApp(
+  ui = dashboardPage(header, sidebar, body),
+  server = function(input, output) {
+    output$test <- rpivotTable::renderRpivotTable({
+      rpivotTable(x,
+                  rows = "cst",
+                  vals = "power_level",
+                  aggregatorName = "Average",
+                  rendererName = "Bar Chart")
+    })
+  }
+)
+
+# Chart 2: Number of scooters by cluster, breaking down by power levels
+header <- dashboardHeader(disable=TRUE)
+sidebar <- dashboardSidebar(disable=TRUE)
+body <- dashboardBody(
+  box(title = "Pivot",
+      width ="100%",
+      height = "100%",
+      status = "primary",
+      solidHeader = TRUE,
+      tags$head(tags$style(type = 'text/css','#test{ overflow-x: scroll; }')),
+      rpivotTableOutput("test")
+))
+shinyApp(
+  ui = dashboardPage(header, sidebar, body),
+  server = function(input, output) {
+    output$test <- rpivotTable::renderRpivotTable({
+      rpivotTable(x, 
+                  rows = "power_level",
+                  cols = "cst",
+                  aggregatorName = "Count",
+                  rendererName = "Stacked Bar Chart")
+    })
+  }
+)
+```
+
+## **5.4. R vs. Python**
+
+I started working on this assignment using python, but then I thought R would be a more suitable choice for this specific task. As shown above, R provides very nice visualization with a minimum effort. It also provide TSP and medoids packages to support the analysis (I could not find any package like that in Python). I'm sure Python will do a great job with this task too, but I feel like R made my life much easier.
+
+# **6. Conclusion**
+
+Using Traveling Saleperson Problem (TSP) package, I optimize the operation strategy that has operation time cost around 10 days. This conclusion is based on several assumptions as well as constrainst, such as having a charging station at (20.19, 20.19). Analyzing the dataset, I come up with a few conclusion about the geographical distribution of scooters with different power levels, which enable me to simplify the analysis and reduce computational cost. Proposing a near-optimal solution, this analysis will help enhance our scooter user experience.
+
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+# Convert R Mardown (this document) to R Script to share on GitHub
+library(knitr)
+purl("main.Rmd")
+```

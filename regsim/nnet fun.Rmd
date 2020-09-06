@@ -1,0 +1,175 @@
+---
+title: "Enjoying Neural Network with R"
+author: "Sang Truong"
+date: "10/23/2019"
+output: html_document
+---
+
+# Section 1. My attempt to improve my old smoker classifier
+
+A couple years ago I have a project in my statistics class in which I used probit regression to classify who is smoker and who is not using probit regression (a fancy version of logistic regression). Since I happen to have some free time, I decide to train a neural network with this old data, hoping to outperform the probit model. I don't know too much about training neural network in R, so this is a great chance for me to learn too! 
+
+## Loading the data and library
+
+```{r}
+library(imbalance) #Handling imbalance data
+library(DescTools) #Descriptive statistics
+library(glmnet) #Generalized linear models 
+library(neuralnet) #Neural network
+
+raw = read.csv("/Users/sangtruong_2021/Documents/GitHub/First-classification/raw.csv")
+smoke = raw[,-16]
+smoke = na.omit(smoke)
+```
+
+## Spliting between training set and test seet
+
+```{r}
+#Normalizing data: 
+for(i in 1:15){
+  smoke[,i] = ( smoke[,i] - min(smoke[,i]) )/(max(smoke[,i])-min(smoke[,i]))
+}
+summary(smoke)
+dim(smoke)
+nrow(smoke[smoke$smoke == 1,]) #3026
+nrow(smoke[smoke$smoke == 0,]) #16494. Yes, we have imbalanced dataset
+
+# Creating train and test dataset
+index = sample(1:19520, 13000)
+train = smoke[index,]
+test = smoke[-index,]
+dim(test)
+```
+
+## Handling imbalance dataset
+```{r}
+# Balancing train dataset
+diff = abs( nrow(train[train$smoke == 1,]) - nrow(train[train$smoke == 0,]) )
+genTrain = mwmote(dataset = train, numInstances = diff, classAttr = "smoke")
+
+bTrain = rbind(train, genTrain)
+nrow(bTrain)
+
+nrow(bTrain[bTrain$smoke == 1,])
+nrow(bTrain[bTrain$smoke == 0,])
+
+# Shuffling the dataset before training 
+set.seed(1)
+rows = sample(nrow(bTrain))
+bTrain = bTrain[rows, ]
+```
+
+## Statistical models
+```{r}
+# Traditional logistic regression
+glm.fits = glm(smoke~age+male+educyear+restpub+resthome+lnprice+white+asian+black+hisp+famincome+agesq,
+               data=bTrain, family=binomial)
+
+# Ridge regression
+x = model.matrix(smoke~.-1, data = bTrain)
+y = bTrain$smoke
+fit.ridge  = glmnet(x, y, family="binomial", alpha = 0)
+plot(fit.ridge, xvar = "lambda", label = TRUE)
+cv.ridge = cv.glmnet(x,y, alpha = 0)
+plot(cv.ridge)
+
+# Lasso regression
+fit.lasso = glmnet(x, y, family="binomial", alpha = 1)
+plot(fit.lasso, xvar = "lambda", label = TRUE)
+cv.lasso = cv.glmnet(x,y, family="binomial", alpha = 1)
+plot(cv.lasso)
+coef(cv.lasso)
+glm.lasso = glm(smoke~age+male+educyear+restpub+resthome+price+lnprice+white+asian+black+hisp+famincome+agesq,
+                data=bTrain, family=binomial)
+
+pred.lasso = predict(glm.lasso, newdata = test)
+pred.lasso = ifelse(pred.lasso>0.5,1,0)
+lasso.err = mean(test$smoke != pred.lasso)
+lasso.err #0.1822
+predVSreal = cbind(test$smoke, pred.lasso)
+```
+
+## Deep learning model
+```{r}
+# Traing the model
+nnet = neuralnet(formula = smoke~age+male+educyear+restpub+resthome
+                 +price+lnprice+white+asian+black+hisp+famincome+agesq,
+                 data=bTrain, hidden = c(13,11,9,7,5,3), linear.output = FALSE)
+
+plot(n)
+
+# Result
+n1 = ifelse(nnet$net.result[[1]]>0.5,1,0)
+errorRate = mean(bTrain[c(201:400),15] != n1)
+errorRate #0.485
+
+predVSreal = cbind(bTrain[c(201:400),15], n1)
+predVSreal
+plot(predVSreal[,1])
+points(predVSreal[,2], col = "red")
+
+```
+
+# Another neural network training by Frauke Gunther and Stefan Fritsh from The R Journal Vol. 2/1, June 2010.
+
+```{r}
+# Reviewing the data
+?infert
+dim(infert)
+
+# Fitting the model
+nn = neuralnet(formula = case~age+parity+induced+spontaneous,
+               data = infert,
+               hidden = 2,
+               err.fct = "ce",
+               linear.output = FALSE)
+
+# Visualizing the neural network
+plot(nn)
+
+# Result summary
+nn$weights
+nn$net.result #prediction for each observation
+nn$net.result[[1]]
+
+# Performance evaluation
+nnrecode = ifelse(nn$net.result[[1]]>0.5,1,0)
+nnrecode
+
+misClassificationError = mean(infert$case !=nnrecode)
+misClassificationError
+
+OutPutVsPred = cbind(infert$case, nnrecode)
+OutPutVsPred
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

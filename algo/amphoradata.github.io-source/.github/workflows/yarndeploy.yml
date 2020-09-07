@@ -33,5 +33,5 @@ jobs:
       - name: Yarn deploy and publish
         run: yarn deploy # will run `yarn install` command
         env:
-          GIT_USER: amphoradata
+          GIT_USER: sangttruong
           USE_SSH: true

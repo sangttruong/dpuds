@@ -1,0 +1,37 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - source
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Set git configuration
+        run: |
+          git config --global user.email "gh-actions@amphoradata.com"
+          git config --global user.name "GitHub Actions"
+      - uses: webfactory/ssh-agent@v0.1.1
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: Yarn install
+        run: yarn install # will run `yarn install` command
+      - name: Lint
+        run: yarn lint-check # will run a linter that checks the files are to standard.
+      - name: Compile Typescript Check
+        run: yarn compile # runs the typescript compilation.
+      - name: Yarn build
+        run: yarn build # will run `yarn install` command
+      - name: Yarn deploy and publish
+        run: yarn deploy # will run `yarn install` command
+        env:
+          GIT_USER: amphoradata
+          USE_SSH: true

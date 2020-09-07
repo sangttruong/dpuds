@@ -1,0 +1,15 @@
+.plan-card {
+    padding: 1.8rem;
+    margin-bottom: 3rem;
+}
+
+.plan-button .buttons {
+    width: 100%;
+}
+
+.info-button .buttons {
+    width: 100%;
+    box-shadow: 0 0 0 0;
+    background-color: var(--amphora-white);
+    color: var(--blue-garnet);
+}

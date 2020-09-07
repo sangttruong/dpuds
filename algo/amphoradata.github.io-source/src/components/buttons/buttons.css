@@ -1,0 +1,39 @@
+.buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bolder;
+    font-size: 1.2rem;
+    height: 46px;
+    width: 190px;
+    border-radius: 4px;
+    box-shadow: 0 2px 0 0 #5aa6c0;
+    background-color: var(--blue-garnet);
+    color: var(--amphora-white);
+    margin-bottom: 16px;
+    margin-top: 16px;
+    text-align: center;
+}
+
+.buttons_tab {
+    display: flex;
+    padding-top: 0.75rem;
+    justify-content: center;
+    height: 3rem;
+    width: 100%;
+    margin: auto;
+    color: var(--blue-garnet);
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 1px 0 0 var(--marble);
+}
+
+.buttons_tab:hover {
+    background-color: var(--blue-garnet);
+    color: var(--amphora-white);
+}
+
+.tab_active {
+    box-shadow: 0 2px 0 0 var(--turquoise);
+    color: var(--ebony);
+}

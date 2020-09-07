@@ -1,0 +1,78 @@
+/* stylelint-disable docusaurus/copyright-header */
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+/* dont use these styles any more */
+
+.presentationContainerBlank {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.placeholderSection {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 700px;
+    height: 300px;
+    background: white;
+    border: 1px solid black;
+}
+
+html {
+    background-color: var(--porcelain);
+}
+
+.spaceBetween {
+    justify-content: space-around;
+}
+
+.spaceEvenly {
+    justify-content: space-evenly;
+}
+
+.justifyContentCenter {
+    justify-content: center;
+}
+
+.opacityContainer {
+    width: 100%;
+    color: white;
+    background: rgba(72, 140, 166, 0.8) !important;
+}
+
+.description {
+    font-size: 20x;
+    font-family: "Roboto", sans-serif;
+    letter-spacing: 0.1px;
+    line-height: 1.4;
+}
+
+@media screen and (max-width: 966px) {
+    .heroBanner {
+        padding: 2rem;
+    }
+}
+
+.disabledLink {
+    color: currentColor;
+    cursor: not-allowed;
+    opacity: 0.5;
+    text-decoration: none;
+}
+.rightAbsolute {
+    position: absolute;
+    right: 40px;
+}
+.whiteSpace {
+    white-space: normal;
+}

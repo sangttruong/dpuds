@@ -1,0 +1,14 @@
+.data-products {
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+    width: 100%;
+}
+
+.data-products img {
+    width: 400px;
+}
+
+.data-products .row {
+    margin: 2rem;
+}

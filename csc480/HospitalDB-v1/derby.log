@@ -1,0 +1,11 @@
+----------------------------------------------------------------
+Thu Apr 30 00:21:04 EDT 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.7.1.1 - (1040133): instance a816c00e-0171-c951-0b27-00000786e1f8 
+on database directory /Users/sangtruong_2021/Documents/GitHub/hospitalDatabase/Hospital-v1/Hospital  with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@799f7e29 
+Loaded from file:/Users/sangtruong_2021/Documents/GitHub/hospitalDatabase/Hospital-v1/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=11.0.2+9-LTS
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Thu Apr 30 00:21:04 EDT 2020:
+Shutting down instance a816c00e-0171-c951-0b27-00000786e1f8 on database directory /Users/sangtruong_2021/Documents/GitHub/hospitalDatabase/Hospital-v1/Hospital with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@799f7e29 

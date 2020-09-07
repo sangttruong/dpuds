@@ -1,3 +1,13 @@
+Hi there! If you are an undergraduate student who decides to learn (a little bit) about statistics and machine learning, this repo might be useful for you (particularly if you go to DePauw University). I compile a list of materials both that I use when I start my journey. I find that having some study guide is particularly helpful for machine learning and statistics, as there are so much resource out there for us to choose. Yes, it can be overwhelming when there are so much options!
+
+You will find in this tutorial the following materials: 
+* ISLR: Introduction to Statistical Learning in R
+* ECON385 (DePauw): Regression and Monte-Carlo Simulation
+* MATH348 (DePauw): Statistical Computing
+* CHEM395 (DePauw): Data-driven Approach for Molecular Modeling
+* XTern19: A platform for student to find summer internship in tech
+* DeKathon 2019 (DePauw): Data science hackathon at DePauw University in 2019
+
 # Introduction to Statistical Learning in R
 
 Introduction to Statistical Learning in R (ISLR) explores the theories behind some common machine learning methods from statistical approach. Topics of the class cover: 

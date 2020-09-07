@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[72],{130:function(e,n,o){"use strict";o.r(n);var t=o(0),w=o(2);n.default=()=>t.createElement(w.c,{to:"/glaze/overview"})}}]);

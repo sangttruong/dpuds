@@ -1,6 +1,7 @@
 module.exports = {
     url: "https://sangttruong.github.io/dpuds/",
-    baseUrl: "/",
+//     baseUrl: "/",
+    baseUrl: "/dpuds/algo/",
     favicon: "img/favicon.ico",
     title: "Design and Analysis of Algorithms",
     tagline:

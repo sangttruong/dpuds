@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[30],{91:function(t,e,n){"use strict";n.r(e);var a=n(0),o=n(2);e.default=function(){return a.createElement(o.c,{to:"/data/vegetation"})}}}]);

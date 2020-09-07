@@ -1,13 +1,13 @@
 module.exports = {
-    url: "https://amphoradata.github.io",
+    url: "https://sangttruong.github.io/dpuds/",
     baseUrl: "/",
     favicon: "img/favicon.ico",
     title: "The best way to buy and sell data in realtime",
     tagline:
         "Buy and sell information on our marketplace, or use Glaze to sell data on your own website.",
     // github pages config
-    organizationName: "AmphoraData", // Usually your GitHub org/user name.
-    projectName: "AmphoraData.github.io", // Usually your repo name.
+    organizationName: "sangttruong", // Usually your GitHub org/user name.
+    projectName: "dpuds", // Usually your repo name.
     themeConfig: {
         colorMode: {
             disableSwitch: true,
@@ -15,7 +15,7 @@ module.exports = {
 
         algolia: {
             apiKey: "0797d5513a4961659b3f15828b64f261",
-            indexName: "amphoradata",
+            indexName: "sangttruong",
             algoliaOptions: {}, // Optional, if provided by Algolia
         },
         // Google Analytics
